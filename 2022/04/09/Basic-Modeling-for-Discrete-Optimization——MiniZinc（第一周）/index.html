@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/qch/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Basic Modeling for Discrete Optimization——MiniZinc（第一周）1 语法知识 MiniZinc模型中语句的顺序可以乱。  步骤  参数定义  决策变量声明  约束  目标函数  输出语句   举例：   参数：必须被赋值，而且只能赋值一次。可以被声明为int，float，bool或者一个范围、集合。比如: 1int: i&#x3D;3  决策变量：用var来声明">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Basic Modeling for Discrete Optimization">
+<meta property="og:url" content="http://example.com/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc%EF%BC%88%E7%AC%AC%E4%B8%80%E5%91%A8%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Basic Modeling for Discrete Optimization——MiniZinc（第一周）1 语法知识 MiniZinc模型中语句的顺序可以乱。  步骤  参数定义  决策变量声明  约束  目标函数  输出语句   举例：   参数：必须被赋值，而且只能赋值一次。可以被声明为int，float，bool或者一个范围、集合。比如: 1int: i&#x3D;3  决策变量：用var来声明">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2022/04/09/79ZI1gt6aHoFBEJ.png">
+<meta property="article:published_time" content="2022-04-09T02:23:03.000Z">
+<meta property="article:modified_time" content="2022-04-19T05:50:20.515Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/04/09/79ZI1gt6aHoFBEJ.png">
+
+<link rel="canonical" href="http://example.com/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc%EF%BC%88%E7%AC%AC%E4%B8%80%E5%91%A8%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Basic Modeling for Discrete Optimization | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc%EF%BC%88%E7%AC%AC%E4%B8%80%E5%91%A8%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Basic Modeling for Discrete Optimization
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-09 10:23:03" itemprop="dateCreated datePublished" datetime="2022-04-09T10:23:03+08:00">2022-04-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-19 13:50:20" itemprop="dateModified" datetime="2022-04-19T13:50:20+08:00">2022-04-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Basic-Modeling-for-Discrete-Optimization——MiniZinc（第一周）"><a href="#Basic-Modeling-for-Discrete-Optimization——MiniZinc（第一周）" class="headerlink" title="Basic Modeling for Discrete Optimization——MiniZinc（第一周）"></a><strong>Basic Modeling for Discrete Optimization——MiniZinc（第一周）</strong></h1><h2 id="1-语法知识"><a href="#1-语法知识" class="headerlink" title="1 语法知识"></a>1 语法知识</h2><ol>
+<li><p>MiniZinc模型中<u>语句的顺序可以乱</u>。</p>
+</li>
+<li><p>步骤</p>
+<ul>
+<li><p>参数定义</p>
+</li>
+<li><p>决策变量声明</p>
+</li>
+<li><p>约束</p>
+</li>
+<li><p>目标函数</p>
+</li>
+<li><p>输出语句</p>
+</li>
+</ul>
+<p><strong>举例：</strong></p>
+<p><img src="https://s2.loli.net/2022/04/09/79ZI1gt6aHoFBEJ.png" alt="image-20220409103313223" style="zoom: 50%;"></p>
+</li>
+<li><p>参数：必须被赋值，而且只能赋值一次。可以被声明为int，float，bool或者一个范围、集合。比如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int: i=3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>决策变量：用var来声明，也可以用一个有固定值的表达式来赋值，范围写作”l..u”。比如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var 0..4: i;</span><br><span class="line">var int： i = x + 3</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>约束</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">constraint &lt;约束表达式&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output [字符串列表]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字符串常量写在“ ”中，不会超过一行。反斜杠用于特殊字符，比如\n \t等。</p>
+</li>
+<li><p>内建函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shwo(v)  以字符串形式输出v值</span><br><span class="line">\(v)    在字符串常量中显示v</span><br><span class="line">"house" ++ "boat"    用于连接字符串</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>求解模型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">虚线---------标示解</span><br><span class="line">两条虚线==========标示最优解</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>MiniZinc模型文件以<code>.mzn</code>为后缀</p>
+</li>
+</ol>
+<h2 id="2-点兵问题"><a href="#2-点兵问题" class="headerlink" title="2 点兵问题"></a>2 点兵问题</h2><ol>
+<li>纯满足问题是没有目标函数的：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">solve satisfy</span><br></pre></td></tr></table></figure>
+<p>运行时语句变为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ minizinc -all-solultions count.mzn</span><br></pre></td></tr></table></figure>
+<p>默认情况下，MiniZinc输出所有声明的且没有被表达式赋值的变量。</p>
+<ol>
+<li>对于满足问题来说，不需要最优解，所以不需要目标函数。而约束也未必是线性等式和不等式，可以取余、乘法、除法、非等式等情况。</li>
+</ol>
+<h2 id="3-图着色问题"><a href="#3-图着色问题" class="headerlink" title="3 图着色问题"></a>3 图着色问题</h2><ol>
+<li><p>枚举类型的数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">enum COLOR = {GREEN, BLUE, PINK, YELLOW}</span><br></pre></td></tr></table></figure>
+<p>枚举类型定义的是一个具有有限对象的集合。决策变量和参数、数组下标都可以是枚举类型，而集合可以基于枚举类型来定义。</p>
+</li>
+<li><p>并不是每个模型都有解。</p>
+</li>
+<li><p>图着色问题是一个经典的图论问题，在寄存器分配、时间表问题中都有应用。<u>纯图着色问题最好用专门的算法来解决。</u></p>
+</li>
+</ol>
+<h2 id="4-借贷问题"><a href="#4-借贷问题" class="headerlink" title="4 借贷问题"></a>4 借贷问题</h2><ol>
+<li>问题定义：贷款人会出借本金<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: 0" xmlns="http://www.w3.org/2000/svg" width="1.699ex" height="1.545ex" role="img" focusable="false" viewBox="0 -683 751 683"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path></g></g></g></svg></mjx-container>作为初始欠款，每个季度需要定期还款<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.048ex" xmlns="http://www.w3.org/2000/svg" width="1.717ex" height="1.593ex" role="img" focusable="false" viewBox="0 -683 759 704"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path></g></g></g></svg></mjx-container>，季度利率为<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: 0" xmlns="http://www.w3.org/2000/svg" width="1.14ex" height="1.545ex" role="img" focusable="false" viewBox="0 -683 504 683"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D43C" d="M43 1Q26 1 26 10Q26 12 29 24Q34 43 39 45Q42 46 54 46H60Q120 46 136 53Q137 53 138 54Q143 56 149 77T198 273Q210 318 216 344Q286 624 286 626Q284 630 284 631Q274 637 213 637H193Q184 643 189 662Q193 677 195 680T209 683H213Q285 681 359 681Q481 681 487 683H497Q504 676 504 672T501 655T494 639Q491 637 471 637Q440 637 407 634Q393 631 388 623Q381 609 337 432Q326 385 315 341Q245 65 245 59Q245 52 255 50T307 46H339Q345 38 345 37T342 19Q338 6 332 0H316Q279 2 179 2Q143 2 113 2T65 2T43 1Z"></path></g></g></g></svg></mjx-container>，第<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex" xmlns="http://www.w3.org/2000/svg" width="0.781ex" height="1.52ex" role="img" focusable="false" viewBox="0 -661 345 672"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g></g></g></svg></mjx-container>个季度结束后的欠款<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.357ex" xmlns="http://www.w3.org/2000/svg" width="2.457ex" height="1.902ex" role="img" focusable="false" viewBox="0 -683 1086 840.8"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><path data-c="1D435" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path></g><g data-mml-node="mi" transform="translate(792,-150) scale(0.707)"><path data-c="1D456" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path></g></g></g></g></svg></mjx-container>为上期欠款加上根据上期欠款计入的利息减去还款。</li>
+<li>MIP求解器不能表示连续变量的乘积，默认的求解器Gecode采用区间算数，可以解决这个问题。</li>
+<li>数据文件以<code>.dzn</code>为结尾，可以为参数赋值，也可以为决策变量赋值，模型中未赋值参数必须要在数据文件中赋值。</li>
+<li>一个模型是一类优化问题的形式化描述，一个实例是一个特定的优化问题，把一个模型变成实例只需要加入具体数据。</li>
+</ol>
+<h2 id="5-对象建模"><a href="#5-对象建模" class="headerlink" title="5 对象建模"></a>5 对象建模</h2><ol>
+<li><p>我们希望建一个对不同规模数据同时使用的模型。</p>
+</li>
+<li><p>数组：</p>
+<ul>
+<li><p>下标范围可以是l..u也可以是枚举类型。参数和变量数组举例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array[范围] of 变量声明</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数组查找</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">数组名[下标表达式]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>生成器表达式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">forall(i in 范围)（布尔型表达式）   %对于范围内所有i，对应布尔型表达式都为真</span><br><span class="line">sum(i in 范围)(表达式)   %对范围内所有i对应的表达式累加</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>桃园宴会问题是众所周知的背包问题的一个版本。</p>
+</li>
+<li><p>数组的元素可以是任何类型，但不可以是另外一个数组，可以定义多维数组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array[下标集合1，下标集合2，...] of 类型</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数组下标集合必须是一个整形范围或者枚举类型，或者固定值的集合表达式，值就是一个范围。</p>
+</li>
+<li><p>内建函数length返回一维数组的长度。</p>
+</li>
+<li><p>数组的初始化</p>
+<ul>
+<li><p>一维数组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">profit = [400,500];</span><br><span class="line">capacity = [4000,6,2000,60,50];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>二维数组</p>
+<ul>
+<li><p>起始于[|</p>
+</li>
+<li><p>|用来分割行（第一维）</p>
+</li>
+<li><p>结束于|]</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">consumption = [| 1.5,1.0,1.0,1.0</span><br><span class="line">			   | 2.0,0.0,2.0,1.0</span><br><span class="line">			   | 1.5,0.5,1.0,1.0</span><br><span class="line">			   | 0.5,1.0,0.9,1.5</span><br><span class="line">			   | 0.1,2.5,0.1,2.5|]；</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>任何维度的数组（小于等于6）都可以用<code>array nd</code>族的函数进行初始化。它们把一个一维数组转换为一个n为数组，比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consumption = array2d(1..5,1..4,[1.5,1.0,1.0,1.0,2.0,0.0,2.0,0.0,1.5,0.5,1.0,1.0,0.5,1.0,0.9,1.5,0.1,2.5,0.1,2.5]);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>也可以将一个n维数组转为一维数组，比如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array[1..20] of int: list = [consumption[i,j]|i in 1..5, j in 1..4];</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>MiniZinc提供数组推导式，有以下形式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[表达式|生成器1，生成器2，...]</span><br><span class="line">[表达式|生成器1，生成器2，...where测试]</span><br><span class="line">举例：</span><br><span class="line">[i+j|i,j in 1..4 where i&lt;j]</span><br><span class="line">=[1+2,1+3,1+4,2+3,2+4,3+4]</span><br><span class="line">=[3,4,5,6,7]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>生产规划是一个混合整数规划问题，MIP求解器是最理想的。<u>要学会选择求解器！</u></p>
+</li>
+</ol>
+<h2 id="6-全局约束"><a href="#6-全局约束" class="headerlink" title="6 全局约束"></a>6 全局约束</h2><ol>
+<li><p>代码实例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">include "alldifferent.mzn";</span><br><span class="line">set of int: DIGIT = 1..9;</span><br><span class="line">array[DIGIT] of int: rods=[1,2,3,4,5,2,3,4,5];</span><br><span class="line">var DIGIT: M1; </span><br><span class="line">var DIGIT: M2;</span><br><span class="line">var DIGIT: M3;</span><br><span class="line">var DIGIT: M4;</span><br><span class="line">var DIGIT: M5;</span><br><span class="line"></span><br><span class="line">constraint rods[M1]+rods[M2]+rods[M3]+rods[M4]+rods[M5]=12;</span><br><span class="line"></span><br><span class="line">constraint 2303+M1*10+980+M2*1000+M3=301+M4*1000+M5*10;</span><br><span class="line"></span><br><span class="line">constraint alldifferent([M1,M2,M3,M4,M5]);</span><br><span class="line"></span><br><span class="line">solve satisfy;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>集合参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set of 类型：变量名=固定值集合;</span><br></pre></td></tr></table></figure>
+<p>可以作为固定值集合来使用。</p>
+</li>
+<li><p>从代码示例中可以看到，有<u>变量对应表的应用</u>，其下标表达式可以包括决策变量，<font color="red">这就提供了很强的建模能力!!!</font></p>
+</li>
+<li><p>include语句</p>
+<ul>
+<li>这里的语法要注意，<strong>不能忘记分号！！</strong></li>
+<li>把较大模型分成各个小部分</li>
+<li>加载全局约束的定义</li>
+<li>控制MiniZInc面对某一求解器时应加载哪个全局约束的定义</li>
+</ul>
+</li>
+<li><p>全局约束</p>
+<ul>
+<li><u>原则上，任何可以取无限个变量为参数的约束就是全局约束。</u>线性约束就是全局的。</li>
+<li>全局约束是在很多问题都会出现的约束。</li>
+<li>可以使模型更简短，求解变得更加容易。</li>
+</ul>
+</li>
+</ol>
+<h2 id="7-小结"><a href="#7-小结" class="headerlink" title="7 小结"></a>7 小结</h2><p>这一章主要讲的是一些基础知识，值得关注的是线性模型（所有约束都是线性的），这是一个很重要的类型，因为有一种求解器是<strong>混合整数规划求解器</strong>，是特别为解决这类问题而设的，可以解决规模庞大的同类型问题。而minizinc也允许建立非线性约束的模型，比如不等于关系（前面的图着色问题中提及的）。不等于关系的泛化也有提及，比如使用了全局约束alldifferent约束可以强制所有变量取不同的数值。</p>
+<p>最后一节课学到了一个非常重要的建模概念，也就是<font color="red">利用变量作为数组的下标</font>，这里和C语言不同，是可以使用变量作为数组下标的！这个建模技巧很重要。</p>
+<p>这一章中看到了很多经典建模问题。比如编制时间表和排班、背包问题等。背包问题是最小的离散优化问题，又包含了很多复杂的东西，是NP-hard问题。这正是约束和目标之间的竞争当中的取舍，也是在离散优化里面主要看到的东西。我们通常都是只有有限的资源但却希望最大化利润。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/30/Multi-neighborhood-tabu-search-for-the-maximum-weight-clique-problem/" rel="prev" title="Multi-neighborhood tabu search for the maximum weight clique problem">
+      <i class="fa fa-chevron-left"></i> Multi-neighborhood tabu search for the maximum weight clique problem
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/10/Some-thoughts-on-MiniZinc/" rel="next" title="Some thoughts on MiniZinc">
+      Some thoughts on MiniZinc <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc%EF%BC%88%E7%AC%AC%E4%B8%80%E5%91%A8%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">Basic Modeling for Discrete Optimization——MiniZinc（第一周）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%AF%AD%E6%B3%95%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">1 语法知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%82%B9%E5%85%B5%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text">2 点兵问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%9B%BE%E7%9D%80%E8%89%B2%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">3 图着色问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%80%9F%E8%B4%B7%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.</span> <span class="nav-text">4 借贷问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AF%B9%E8%B1%A1%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.5.</span> <span class="nav-text">5 对象建模</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%85%A8%E5%B1%80%E7%BA%A6%E6%9D%9F"><span class="nav-number">1.6.</span> <span class="nav-text">6 全局约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%B0%8F%E7%BB%93"><span class="nav-number">1.7.</span> <span class="nav-text">7 小结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/qch/anime.min.js"></script>
+  <script src="/qch/velocity/velocity.min.js"></script>
+  <script src="/qch/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
