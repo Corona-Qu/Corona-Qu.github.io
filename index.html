@@ -272,6 +272,63 @@ mjx-container[display="true"] + br {
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/28/po/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/po/" class="post-title-link" itemprop="url">po</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 11:36:43" itemprop="dateCreated datePublished" datetime="2023-02-28T11:36:43+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/10/Operations-Research/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -459,7 +516,7 @@ f(\lambda x_1+(1-\lambda)x_2) \geq \lambda f(x_1) + (1-\lambda)f(x_2),\lambda \i
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-04-30 15:40:57" itemprop="dateModified" datetime="2022-04-30T15:40:57+08:00">2022-04-30</time>
+                <time title="Modified: 2022-04-30 16:23:31" itemprop="dateModified" datetime="2022-04-30T16:23:31+08:00">2022-04-30</time>
               </span>
 
           
@@ -554,7 +611,32 @@ f(\lambda x_1+(1-\lambda)x_2) \geq \lambda f(x_1) + (1-\lambda)f(x_2),\lambda \i
 </ul>
 <p>​        用了一系列的状态点来表示。</p>
 <ul>
-<li></li>
+<li><p>约束：最多只能连续两个菜的属性为难消化。</p>
+<p>这个约束我最开始的写法是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">constraint forall(i,j,k in 1..len where (i&lt;j)/\(j&lt;k)/\(temp[dish[i]]=temp[dish[j]])/\(temp[dish[j]]=temp[dish[k]])/\(heavy[dish[i]]=true))</span><br><span class="line">               (k-j-i&gt;=3);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这显然是错误的！因为也可以总共有0道菜或一道菜难消化，这个约束限制了必须要有三道菜难消化，并且满足一定约束。</p>
+<p>老师的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">constraint forall(c in 1..len-2)</span><br><span class="line">                 (heavy[dish[c]] /\ heavy[dish[c+1]] -&gt; not heavy[dish[c+2]]);</span><br></pre></td></tr></table></figure>
+<p>意思是说，如果有两个连续不消化的菜，那么第三道菜一定要易消化。</p>
+<ul>
+<li><p>在写约束之前可以先用自己的语言描述一下这个约束，然后再进行代码编写。多想一下这个约束有没有限制别的条件了。</p>
+</li>
+<li><p>还学到了DFA方法，具体可见minizinc官方文档里面对于regular函数的定义。</p>
+</li>
+</ul>
+<p>老师的代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">% Beauty Trap</span><br><span class="line">% Create the most magnificient feast </span><br><span class="line">enum DISH;</span><br><span class="line">enum TASTE = {spicy, sour, salty, sweet, umame, bland};</span><br><span class="line">enum TEMP = {hot, cold, warm};</span><br><span class="line">%int: ndish;</span><br><span class="line">%set of int: DISH = 1..ndish;</span><br><span class="line">%set of int: TASTE = 1..6;</span><br><span class="line">%int: spicy = 1; int: sour = 2; int: salty = 3; int: sweet = 4; int: umame = 5; int: bland = 6;</span><br><span class="line">%set of int: TEMP = 1..3;</span><br><span class="line">%int: hot = 1; int: cold = 2; int: warm = 3;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">array[DISH] of TASTE: taste;</span><br><span class="line">array[DISH] of TEMP: temp;</span><br><span class="line">array[DISH] of bool: heavy;</span><br><span class="line">array[DISH] of int: value;</span><br><span class="line"></span><br><span class="line">int: len; % length of banquet</span><br><span class="line">set of int: COURSE = 1..len;</span><br><span class="line"></span><br><span class="line">array[COURSE] of var DISH: dish;</span><br><span class="line"></span><br><span class="line">include "alldifferent.mzn";</span><br><span class="line">constraint alldifferent(dish);</span><br><span class="line"></span><br><span class="line">%constraint taste[dish[1]] = salty;</span><br><span class="line">%constraint taste[dish[len]] = sweet;</span><br><span class="line">%constraint forall(c in 1..len-1)</span><br><span class="line">%                 ((taste[dish[c]] = spicy -&gt; (taste[dish[c+1]] in {bland, sweet})) /\</span><br><span class="line">%                  (taste[dish[c]] = sour -&gt; (taste[dish[c+1]] in {bland, umame})) /\</span><br><span class="line">%                  (taste[dish[c]] = sweet -&gt; (taste[dish[c+1]] in {spicy, sour, bland})));</span><br><span class="line">%constraint forall(c in 1..len-1)</span><br><span class="line">%                 (taste[dish[c]] != taste[dish[c+1]]);</span><br><span class="line"></span><br><span class="line">include "regular.mzn";</span><br><span class="line">constraint regular([taste[dish[c]] | c in COURSE], 7, card(TASTE), d, 1, {5});</span><br><span class="line">array[1..7,TASTE] of 0..7: d = </span><br><span class="line">     [| 0,0,4,0,0,0</span><br><span class="line">      | 0,0,0,5,0,7</span><br><span class="line">      | 0,0,0,0,6,7</span><br><span class="line">      | 2,3,0,5,6,7</span><br><span class="line">      | 2,3,0,0,0,7</span><br><span class="line">      | 2,3,4,5,0,7 </span><br><span class="line">      | 2,3,4,5,6,0 |];</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">% a warm dish between any hot dish and later cold dish</span><br><span class="line">%constraint forall(c in 1..len-1)</span><br><span class="line">%                 (temp[dish[c]] = hot -&gt; </span><br><span class="line">%                  forall(c1 in c+1..len)</span><br><span class="line">%                        (temp[dish[c1]] = cold -&gt; </span><br><span class="line">%                         exists(c2 in c+1..c1-1)(temp[dish[c2]] = warm)));</span><br><span class="line">constraint regular([temp[dish[c]] | c in COURSE], 3, card(TEMP), e, 2, 1..3);</span><br><span class="line">array[1..3,TEMP] of 0..3: e =</span><br><span class="line">     [| 1,0,3</span><br><span class="line">      | 1,2,3</span><br><span class="line">      | 1,2,3 |];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">% no more than two heavy dishes in a rows </span><br><span class="line">constraint forall(c in 1..len-2)</span><br><span class="line">                 (heavy[dish[c]] /\ heavy[dish[c+1]] -&gt; not heavy[dish[c+2]]);</span><br><span class="line">% include "sliding_sum.mzn";</span><br><span class="line">% constraint sliding_sum([ heavy[dish[c]] | c in COURSE], 0, 2, 3);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">var int: obj = sum(c in COURSE)(value[dish[c]]) + (len - 1) + sum(c in 1..len-1)(temp[dish[c]] != temp[dish[c+1]]) + sum(c in 1..len-1)(heavy[dish[c]] != heavy[dish[c+1]]);</span><br><span class="line"></span><br><span class="line">solve maximize obj;</span><br><span class="line"></span><br><span class="line">output ["dish = \(dish);\nobj = \(obj);\nvalue1=\(sum(c in COURSE)(value[dish[c]]));\n value2=\( (len - 1)  );\n value3=\( sum(c in 1..len-1)(temp[dish[c]] != temp[dish[c+1]])  )\n value4=\( sum(c in 1..len-1)(heavy[dish[c]] != heavy[dish[c+1]]) )\n"];</span><br></pre></td></tr></table></figure>
+<h2 id="5-第三周（2）——美人计2"><a href="#5-第三周（2）——美人计2" class="headerlink" title="5 第三周（2）——美人计2"></a>5 第三周（2）——美人计2</h2><p>我的代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">% Beauty Trap</span><br><span class="line">% Perform the most seductive dance</span><br><span class="line"></span><br><span class="line">enum LEGS = {spin, leap, waltz, curtsey, prep, stand};</span><br><span class="line">enum ARMS = {beckon, out, up, wrapped, neutral};</span><br><span class="line">enum FACE = {smile, wink, batt, think, glow, blank};</span><br><span class="line"></span><br><span class="line">int: maxlen;</span><br><span class="line">set of int: STEP = 1..maxlen;</span><br><span class="line">array[LEGS] of int: maxlegs;</span><br><span class="line">array[ARMS] of int: maxarms;</span><br><span class="line">array[FACE] of int: maxface;</span><br><span class="line">constraint assert(maxlegs[stand] &gt;= maxlen, "maxlegs[stand] smaller than maxlen");</span><br><span class="line">constraint assert(maxarms[neutral] &gt;= maxlen, "maxarms[neutral] smaller than maxlen");</span><br><span class="line">constraint assert(maxface[blank] &gt;= maxlen, "maxface[blank] smaller than maxlen");</span><br><span class="line">array[LEGS,ARMS] of int: dance_value;</span><br><span class="line">array[ARMS,FACE] of int: entice_value;</span><br><span class="line">constraint assert(dance_value[stand,neutral] = 0, "incorrect dance_value array");</span><br><span class="line">constraint assert(entice_value[neutral,blank] = 0, "incorrect entice_value array");</span><br><span class="line">int: boredom; % how bored each step make the viewer</span><br><span class="line"></span><br><span class="line">var 3..maxlen: len;</span><br><span class="line">array[STEP] of var LEGS: legs;</span><br><span class="line">array[STEP] of var ARMS: arms;</span><br><span class="line">array[STEP] of var FACE: face;</span><br><span class="line"></span><br><span class="line">include "regular.mzn";%这个不要忘了啊！</span><br><span class="line">include "alldifferent.mzn";</span><br><span class="line">constraint regular(legs,7,card(LEGS),l,1,{7});</span><br><span class="line">array[1..7,LEGS] of 0..7: l =</span><br><span class="line">      [| 2,0,4,5,6,7</span><br><span class="line">       | 0,0,0,5,6,7</span><br><span class="line">       | 2,0,4,0,0,7</span><br><span class="line">       | 2,0,4,0,6,7</span><br><span class="line">       | 2,0,4,5,0,7</span><br><span class="line">       | 2,3,4,5,6,7</span><br><span class="line">       | 2,0,4,5,6,7|];</span><br><span class="line"></span><br><span class="line">constraint forall(i in 1..len-2)((legs[i]=waltz /\ legs[i+1]=waltz)-&gt;(legs[i+2]!=waltz));</span><br><span class="line"></span><br><span class="line">constraint forall(i in 1..len-1)</span><br><span class="line">                  (legs[i]==waltz-&gt;</span><br><span class="line">                     forall(j in i+1..len)</span><br><span class="line">                           (legs[j]==curtsey-&gt;</span><br><span class="line">                               exists(k in i+1..j-1)(legs[k]=stand)));</span><br><span class="line"></span><br><span class="line">constraint regular(arms,6,card(ARMS),a,1,{6});</span><br><span class="line">array[1..6,ARMS] of 0..6:a=</span><br><span class="line">      [| 0,3,4,5,6</span><br><span class="line">       | 0,3,4,5,6</span><br><span class="line">       | 2,0,4,0,6</span><br><span class="line">       | 2,3,0,0,6</span><br><span class="line">       | 0,3,4,0,6</span><br><span class="line">       | 0,3,4,5,6|];</span><br><span class="line"></span><br><span class="line">constraint regular(face,7,card(FACE),f,1,{7});</span><br><span class="line">array[1..7,FACE] of 0..7:f=</span><br><span class="line">    [| 2,3,4,5,6,7</span><br><span class="line">     | 0,3,4,0,6,7</span><br><span class="line">     | 2,0,4,5,6,7</span><br><span class="line">     | 2,3,0,0,6,7</span><br><span class="line">     | 2,3,4,0,6,7</span><br><span class="line">     | 2,3,4,5,0,7</span><br><span class="line">     | 2,3,4,5,6,7|];</span><br><span class="line">      </span><br><span class="line">constraint forall(i in 1..len)</span><br><span class="line">                  (dance_value[legs[i],arms[i]]&gt;=0);</span><br><span class="line">constraint forall(i in 1..len)</span><br><span class="line">                  (entice_value[arms[i],face[i]]&gt;=0);</span><br><span class="line">                  </span><br><span class="line">constraint forall(i in LEGS)(count(legs,i)&lt;=maxlegs[i]);</span><br><span class="line">constraint forall(i in ARMS)(count(arms,i)&lt;=maxarms[i]);</span><br><span class="line">constraint forall(i in FACE)(count(face,i)&lt;=maxface[i]);</span><br><span class="line"></span><br><span class="line">var int:obj;</span><br><span class="line">obj = sum(i in 1..len)(dance_value[legs[i],arms[i]])</span><br><span class="line">      + sum(i in 1..len)(entice_value[arms[i],face[i]])</span><br><span class="line">      - (len*boredom);</span><br><span class="line"></span><br><span class="line">      </span><br><span class="line">solve maximize obj;</span><br><span class="line"></span><br><span class="line">output["len=\(len)\nlegs=\([legs[i]| i in 1..len])\narms=\([arms[i]| i in 1..len])\nface=\([face[i]| i in 1..len])\nobj=\(obj)"];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这个题其实根据前面的美人计2来做就可以。</p>
+<p>注意以下问题：</p>
+<ul>
+<li>不要忘记include！！！！！regular是需要include的</li>
+<li>如果regular不能解决，可以再补充约束。</li>
+<li>想要输出指定值的话，可以用数组推导式。</li>
+<li>这题答案不一定对，因为没有答案所以只能先这样。</li>
 </ul>
 
       
@@ -575,7 +657,7 @@ f(\lambda x_1+(1-\lambda)x_2) \geq \lambda f(x_1) + (1-\lambda)f(x_2),\lambda \i
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc%EF%BC%88%E7%AC%AC%E4%B8%80%E5%91%A8%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -589,7 +671,7 @@ f(\lambda x_1+(1-\lambda)x_2) \geq \lambda f(x_1) + (1-\lambda)f(x_2),\lambda \i
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc%EF%BC%88%E7%AC%AC%E4%B8%80%E5%91%A8%EF%BC%89/" class="post-title-link" itemprop="url">Basic Modeling for Discrete Optimization</a>
+            <a href="/2022/04/09/Basic-Modeling-for-Discrete-Optimization%E2%80%94%E2%80%94MiniZinc/" class="post-title-link" itemprop="url">Basic Modeling for Discrete Optimization</a>
         </h2>
 
         <div class="post-meta">
@@ -606,7 +688,7 @@ f(\lambda x_1+(1-\lambda)x_2) \geq \lambda f(x_1) + (1-\lambda)f(x_2),\lambda \i
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-04-30 15:59:08" itemprop="dateModified" datetime="2022-04-30T15:59:08+08:00">2022-04-30</time>
+                <time title="Modified: 2022-04-30 23:20:16" itemprop="dateModified" datetime="2022-04-30T23:20:16+08:00">2022-04-30</time>
               </span>
 
           
@@ -829,6 +911,29 @@ f(\lambda x_1+(1-\lambda)x_2) \geq \lambda f(x_1) + (1-\lambda)f(x_2),\lambda \i
 <p><img src="C:/Users/11459/AppData/Roaming/Typora/typora-user-images/image-20220427211501354.png" alt="image-20220427211501354" style="zoom:50%;"></p>
 <ol>
 <li>离散优化就是整数规划。</li>
+</ol>
+<h1 id="Basic-Modeling-for-Discrete-Optimization——MiniZinc（第四周）"><a href="#Basic-Modeling-for-Discrete-Optimization——MiniZinc（第四周）" class="headerlink" title="Basic-Modeling-for-Discrete-Optimization——MiniZinc（第四周）"></a>Basic-Modeling-for-Discrete-Optimization——MiniZinc（第四周）</h1><ol>
+<li>可以用不同视角来表达不同约束，更简洁、自然的表达会更好，这样求解效率高。</li>
+<li>联通约束可以把不同视角约束表达一致。</li>
+<li>结合模型比单独模型求解效率更高。</li>
+<li>衣带密诏问题：</li>
+</ol>
+<p><img src="https://s2.loli.net/2022/04/30/CJGZeMT6AFxdjw1.png" alt="image-20220430165400896" style="zoom:50%;"></p>
+<p>其实是一个Langford数列问题的一个改编和泛化。</p>
+<p><img src="https://s2.loli.net/2022/04/30/bteZMx5hgYu12yH.png" alt="image-20220430171427032" style="zoom:50%;"></p>
+<ol>
+<li><p>排列问题总是有至少两个不同的视角</p>
+</li>
+<li><p>选用视角使之可以或容易表达约束和目标。否则，选用两个视角并添加inverse约束。</p>
+</li>
+<li><font color="red">枚举变量是有序的集合！</font>
+
+<p><img src="https://s2.loli.net/2022/04/30/kEUKLMZ7W1JrvVN.png" alt="image-20220430171858522" style="zoom:50%;"></p>
+</li>
+<li><p><img src="C:/Users/11459/AppData/Roaming/Typora/typora-user-images/image-20220430172430936.png" alt="image-20220430172430936" style="zoom:50%;"></p>
+</li>
+<li><p>有inverse就可以去掉alldifferent了。</p>
+</li>
 </ol>
 
       
@@ -1224,7 +1329,7 @@ T_{swap}=random(|OM|)+T_1</script><p><mjx-container class="MathJax" jax="SVG"><s
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1252,7 +1357,7 @@ T_{swap}=random(|OM|)+T_1</script><p><mjx-container class="MathJax" jax="SVG"><s
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
